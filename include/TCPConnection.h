@@ -34,7 +34,7 @@ private:
     void rxWorker();
     void config_optional_socket();
 private:
-    std::thread _rxWorker;
+    std::thread _rxThread;
     std::mutex _rxMutex;
     ConnectionInfo _infoConn;
     int _sockfd;

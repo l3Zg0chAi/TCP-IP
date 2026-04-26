@@ -8,11 +8,13 @@ TCPConnection::TCPConnection(ConnectionInfo info)
 
 TCPConnection::~TCPConnection()
 {
+    stop();
 }
 
 bool TCPConnection::receive_from_server()
 {
-
+    // nhận từ recv, push vào queue
+    return false;
 }
 
 bool TCPConnection::open_connection()
@@ -56,10 +58,17 @@ bool TCPConnection::open_connection()
 
 void TCPConnection::close_connection()
 {
+    close(_sockfd);
+    _sockfd = -1;
 }
 
 void TCPConnection::stop()
 {
+    close_connection();
+    _stopFlag = true;
+    if (_rxThread.joinable()){
+        _rxThread.join();
+    }
 }
 
 void TCPConnection::start()
@@ -73,7 +82,7 @@ void TCPConnection::start()
         return;
     }                                                        
     _stopFlag = false;
-    _rxWorker = std::thread(&TCPConnection::rxWorker, this);
+    _rxThread = std::thread(&TCPConnection::rxWorker, this);
 }
 
 void TCPConnection::setState(ESTATE_CONNECTIONS state)
@@ -87,21 +96,23 @@ void TCPConnection::rxWorker()
 {
     setCurrentThreadName(std::string("rxWorker"));
     while(true){
+        if (_stopFlag) return;
         switch(_state){
             case ESTATE_CONNECTIONS::INIT:
-                if(open_connection()){
-                    setState(ESTATE_CONNECTIONS::CONNECTED);
+                if(!open_connection()){
+                    continue;
                 }
-            break;
+                setState(ESTATE_CONNECTIONS::CONNECTED);
+                break;
             case ESTATE_CONNECTIONS::CONNECTED:
                 if(!receive_from_server()){
                     setState(ESTATE_CONNECTIONS::CLOSED);
                 }
-            break;
+                break;
             case ESTATE_CONNECTIONS::CLOSED:
                 close_connection();
                 setState(ESTATE_CONNECTIONS::INIT);
-            break;
+                break;
         }
     }
 }

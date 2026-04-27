@@ -47,7 +47,7 @@ public:
 
     bool wait_and_pop(T& value){
         std::unique_lock<std::mutex> lock(_mutex);
-        _cv.wait(lock, [this]{return !_queue.empty() || _stopFlag});
+        _cv.wait(lock, [this]{return !_queue.empty() || _stopFlag;});
         if (_queue.empty() || _stopFlag){
             return false;
         }

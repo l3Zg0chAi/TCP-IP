@@ -7,4 +7,5 @@ set(SOURCES
     src/TCPConnection.cpp
     src/TCPCommunicator.cpp
 )
-add_executable(tcpclient ${SOURCES} -pthread)
+add_executable(tcpclient ${SOURCES})
+target_link_libraries(tcpclient -pthread)

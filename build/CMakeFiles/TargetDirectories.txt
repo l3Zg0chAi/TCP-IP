@@ -1,3 +1,0 @@
-D:/ontap/build/CMakeFiles/MyProject.dir
-D:/ontap/build/CMakeFiles/edit_cache.dir
-D:/ontap/build/CMakeFiles/rebuild_cache.dir

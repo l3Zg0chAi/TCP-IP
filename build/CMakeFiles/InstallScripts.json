@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"D:/ontap/build/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

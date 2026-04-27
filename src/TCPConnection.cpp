@@ -33,21 +33,21 @@ bool TCPConnection::open_connection()
     
     // config ip port server - nghĩa là kết nối tới ip và port nào của server
     struct sockaddr_in serverAddr{};
-    clientAddr.sin_family = AF_INET;
-    clientAddr.sin_port = htons(_infoConn.serverPort);
-    inet_aton(_infoConn.serverADDR.c_str(), &serverADDR.sin_addr);
+    serverAddr.sin_family = AF_INET;
+    serverAddr.sin_port = htons(_infoConn.serverPort);
+    inet_aton(_infoConn.serverADDR.c_str(), &serverAddr.sin_addr);
 
     config_optional_socket();
 
     // bind client addr and port to socket
-    if (bind(_sockfd, (struct sockaddr*)clientAddr, sizeof(clientAddr)) == -1){
+    if (bind(_sockfd, (struct sockaddr*)&clientAddr, sizeof(clientAddr)) == -1){
         DEBUG_LOG("bind ip %s and port %u client fail", _infoConn.clientADDR.c_str(), _infoConn.clientPort);
         return false;
     } else {
         DEBUG_LOG("bind ip %s and port %u client success", _infoConn.clientADDR.c_str(), _infoConn.clientPort);
     }
 
-    if (connect(_sockfd, (struct sockaddr)serverAddr, sizeof(serverAddr)) == -1){
+    if (connect(_sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1){
         DEBUG_LOG("connect to ip %s and port %u server fail", _infoConn.serverADDR.c_str(), _infoConn.serverPort);
         return false;
     } else {

@@ -8,9 +8,6 @@
 template<typename T>
 class ThreadSafeQueue {
 public:
-    ThreadSafeQueue() = default;
-    ThreadSafeQueue(const ThreadSfaeQueue&) = delete;
-
     ThreadSafeQueue& oprerator=(const ThreadSafeQueue& other){
         if (this == &other) return;
         std::lock_guard<std::mutex> lock_this(_mutex);
@@ -70,6 +67,6 @@ private:
     std::condition_variable _cv;
     std::queue<T> _queue;
     bool _stopFlag = false;
-}
+};
 
 #endif // __THREAD_SAFE_QUEUE_H__

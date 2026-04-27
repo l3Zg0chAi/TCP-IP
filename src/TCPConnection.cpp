@@ -2,7 +2,8 @@
 #include "Logger.h"
 
 TCPConnection::TCPConnection(ConnectionInfo info) 
-    : _infoConn(info), _sockfd(-1), _stopFlag(true), _state(ESTATE_CONNECTIONS::CLOSED){
+    : _infoConn(info), _sockfd(-1), _stopFlag(true), _state(ESTATE_CONNECTIONS::CLOSED)
+{
     DEBUG_LOG ("Constructor TCPConnection objejct");
 }
 

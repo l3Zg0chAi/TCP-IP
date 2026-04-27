@@ -24,7 +24,7 @@ inline void setCurrentThreadName(const std::string& name){
 
 #define DEBUG_LOG(fmt, ...) \
     do { \
-        std::fprintf(stderr, "[DEBUG] [tid=%d] [tname=%s] [%s:%d] [%s()] " fmt "\n", \
+        std::fprintf(stderr, "[tid=%d][tname=%s][%s:%d][%s()] " fmt "\n", \
             static_cast<int>(gettid()), \
             getCurrentThreadName(), \
             __FILE__, __LINE__, __func__, ##__VA_ARGS__); \

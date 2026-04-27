@@ -13,7 +13,7 @@ TCPCommunicator::TCPCommunicator()
 void TCPCommunicator::start()
 {
     for (const auto& connection : connections){
-        connection->start();
+        connection.second->start();
     }
 }
 
@@ -24,9 +24,8 @@ void TCPCommunicator::pushToQueue(Packet value)
 
 bool TCPCommunicator::receive_packet(Packet &value)
 {
-    if (_rxQueueAllConn.empty()){
-        return false;
+    if (_rxQueueAllConn.try_pop(value)){
+        return true;
     }
-    _rxQueueAllConn.try_pop(value);
-    return true;
+    return false;
 }

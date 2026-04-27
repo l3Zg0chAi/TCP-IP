@@ -1,5 +1,5 @@
-#ifndef __TCPCONNECTION_H__
-#define __TCPCONNECTION_H__
+#ifndef TCPCONNECTION_H
+#define TCPCONNECTION_H
 #include "ThreadSafeQueue.h"
 #include "CommonDef.h"
 #include <atomic>
@@ -42,4 +42,4 @@ private:
     ESTATE_CONNECTIONS _state;
 };
 
-#endif // __TCPCONNECTION_H__
+#endif // TCPCONNECTION_H

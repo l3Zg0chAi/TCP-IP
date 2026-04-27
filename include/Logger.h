@@ -1,5 +1,5 @@
-#ifndef __LOGGER_H__
-#define __LOGGER_H__
+#ifndef LOGGER_H
+#define LOGGER_H
 #include <pthread.h>
 #include <string>
 #include <cstring>
@@ -33,4 +33,4 @@ inline void setCurrentThreadName(const std::string& name){
 #define DEBUG_LOG(fmt, ...) do {} while (0)
 #endif
 
-#endif // __LOGGER_H__
+#endif // LOGGER_H

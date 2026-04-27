@@ -1,5 +1,5 @@
-#ifndef __THREAD_SAFE_QUEUE_H__
-#define __THREAD_SAFE_QUEUE_H__
+#ifndef THREAD_SAFE_QUEUE_H
+#define THREAD_SAFE_QUEUE_H
 
 #include <queue>
 #include <mutex>
@@ -8,11 +8,11 @@
 template<typename T>
 class ThreadSafeQueue {
 public:
-    ThreadSafeQueue& oprerator=(const ThreadSafeQueue& other){
-        if (this == &other) return;
+    ThreadSafeQueue& operator=(const ThreadSafeQueue& other){
+        if (this == &other) return *this;
         std::lock_guard<std::mutex> lockthis(_mutex);
         std::lock_guard<std::mutex> lockother(other._mutex);
-        _queue = otehr._queue;
+        _queue = other._queue;
         return *this;
     }
 
@@ -47,7 +47,7 @@ public:
 
     bool wait_and_pop(T& value){
         std::unique_lock<std::mutex> lock(_mutex);
-        _cv.wait(lock, [this]{!_queue.empty() || _stopFlag});
+        _cv.wait(lock, [this]{return !_queue.empty() || _stopFlag});
         if (_queue.empty() || _stopFlag){
             return false;
         }
@@ -58,15 +58,18 @@ public:
     }
     
     void set_stopFlag(bool valueFlag){
-        std::lock_guard<std::mutex> lock(_mutex);
-        _stopFlag = valueFlag;
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _stopFlag = valueFlag;
+        }
+        _cv.notify_all();
     }
 
 private:
-    std::mutex _mutex;
+    mutable std::mutex _mutex;
     std::condition_variable _cv;
     std::queue<T> _queue;
     bool _stopFlag = false;
 };
 
-#endif // __THREAD_SAFE_QUEUE_H__
+#endif // THREAD_SAFE_QUEUE_H

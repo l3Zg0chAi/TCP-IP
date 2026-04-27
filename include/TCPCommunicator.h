@@ -1,5 +1,5 @@
-#ifndef __TCP_COMMUNICATOR__
-#define __TCP_COMMUNICATOR__
+#ifndef TCP_COMMUNICATOR
+#define TCP_COMMUNICATOR
 
 #include "TCPConnection.h"
 #include <unordered_map>
@@ -21,4 +21,4 @@ private:
     ThreadSafeQueue<Packet> _rxQueueAllConn;    
 };
 
-#endif // __TCP_COMMUNICATOR__
+#endif // TCP_COMMUNICATOR

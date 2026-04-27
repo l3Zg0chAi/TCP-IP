@@ -1,5 +1,5 @@
-#ifndef __COMMON_DEF__
-#define __COMMON_DEF__
+#ifndef COMMON_DEF
+#define COMMON_DEF
 #include <iostream>
 #include <cstdint>
 #include <string>
@@ -33,4 +33,4 @@ const std::unordered_map<ConnectionID, ConnectionInfo> ConnectionInfoTable = {
     {ConnectionID_THREE, {SERVER_IP, 10003, CLIENT_IP, 9003}}
 }; 
 
-#endif // __COMMON_DEF__
+#endif // COMMON_DEF

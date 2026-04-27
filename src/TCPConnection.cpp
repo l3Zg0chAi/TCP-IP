@@ -21,7 +21,7 @@ bool TCPConnection::receive_from_server()
 bool TCPConnection::open_connection()
 {
     if ((_sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1){
-        DEBUG_LOG ("open socket fail");
+        DEBUG_LOG("bind fail errno=%d error=%s", errno, strerror(errno));
         return false;
     }
 
@@ -59,8 +59,10 @@ bool TCPConnection::open_connection()
 
 void TCPConnection::close_connection()
 {
-    close(_sockfd);
-    _sockfd = -1;
+    if (_sockfd != -1){
+        close(_sockfd);
+        _sockfd = -1;
+    }
 }
 
 void TCPConnection::stop()
@@ -100,10 +102,11 @@ void TCPConnection::rxWorker()
         if (_stopFlag) return;
         switch(_state){
             case ESTATE_CONNECTIONS::INIT:
-                if(!open_connection()){
-                    continue;
+                if(open_connection()){
+                    setState(ESTATE_CONNECTIONS::CONNECTED);;
+                } else {
+                    setState(ESTATE_CONNECTIONS::CLOSED);
                 }
-                setState(ESTATE_CONNECTIONS::CONNECTED);
                 break;
             case ESTATE_CONNECTIONS::CONNECTED:
                 if(!receive_from_server()){

@@ -18,9 +18,9 @@ typedef UI_8 ConnectionID;
 #define SERVER_IP ""
 struct ConnectionInfo {
     std::string serverADDR;
-    UI_8 serverPort;
+    UI_32 serverPort;
     std::string clientADDR;
-    UI_8 clientPort;
+    UI_32 clientPort;
 };
 
 struct Packet {

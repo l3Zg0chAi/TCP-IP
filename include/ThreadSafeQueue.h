@@ -10,9 +10,9 @@ class ThreadSafeQueue {
 public:
     ThreadSafeQueue& oprerator=(const ThreadSafeQueue& other){
         if (this == &other) return;
-        std::lock_guard<std::mutex> lock_this(_mutex);
-        std::lock_guard<std::mutex> lock_other(other._mutex);
-        _queue = otehr.queue;
+        std::lock_guard<std::mutex> lockthis(_mutex);
+        std::lock_guard<std::mutex> lockother(other._mutex);
+        _queue = otehr._queue;
         return *this;
     }
 
@@ -20,7 +20,7 @@ public:
         {
             std::lock_guard<std::mutex> lock(_mutex);
             if (_queue.size() > 50){
-                DEB
+                return;
             }
             _queue.push(std::move(value));  
         }

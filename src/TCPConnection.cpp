@@ -128,4 +128,8 @@ void TCPConnection::rxWorker()
 
 void TCPConnection::config_optional_socket()
 {
+    int opt = 1;
+    if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        DEBUG_LOG("setsockopt SO_REUSEADDR fail errno=%d error=%s",errno, strerror(errno));
+    }
 }

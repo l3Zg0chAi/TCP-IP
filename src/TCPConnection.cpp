@@ -17,7 +17,7 @@ TCPConnection::~TCPConnection()
 bool TCPConnection::receive_from_server()
 {
     // nhận từ recv, push vào queue
-    return false;
+    return true;
 }
 
 bool TCPConnection::open_connection()
@@ -61,7 +61,8 @@ bool TCPConnection::open_connection()
 
 void TCPConnection::close_connection()
 {
-    if (_sockfd != -1){
+    if (_sockfd >= 0){
+        shutdown(_sockfd, SHUT_RDWR);
         close(_sockfd);
         _sockfd = -1;
     }

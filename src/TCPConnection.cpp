@@ -1,5 +1,7 @@
 #include "TCPConnection.h"
 #include "Logger.h"
+#include <thread>
+#include <chrono>
 
 TCPConnection::TCPConnection(ConnectionInfo info) 
     : _infoConn(info), _sockfd(-1), _stopFlag(true), _state(ESTATE_CONNECTIONS::CLOSED)
@@ -118,6 +120,7 @@ void TCPConnection::rxWorker()
                 setState(ESTATE_CONNECTIONS::INIT);
                 break;
         }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 

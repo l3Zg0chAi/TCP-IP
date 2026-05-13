@@ -43,14 +43,14 @@ bool TCPConnection::open_connection()
 
     // bind client addr and port to socket
     if (bind(_sockfd, (struct sockaddr*)&clientAddr, sizeof(clientAddr)) == -1){
-        DEBUG_LOG("bind ip %s and port %u client fail", _infoConn.clientADDR.c_str(), _infoConn.clientPort);
+        DEBUG_LOG("bind ip %s and port %u client fail errno=%d, error=%s", _infoConn.clientADDR.c_str(), _infoConn.clientPort,errno,strerror(errno));
         return false;
     } else {
         DEBUG_LOG("bind ip %s and port %u client success", _infoConn.clientADDR.c_str(), _infoConn.clientPort);
     }
 
     if (connect(_sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == -1){
-        DEBUG_LOG("connect to ip %s and port %u server fail", _infoConn.serverADDR.c_str(), _infoConn.serverPort);
+        DEBUG_LOG("connect to ip %s and port %u server fail errno=%d, error=%s", _infoConn.serverADDR.c_str(), _infoConn.serverPort,errno,strerror(errno));
         return false;
     } else {
         DEBUG_LOG("connect to ip %s and port %u server success", _infoConn.serverADDR.c_str(), _infoConn.serverPort);
@@ -104,6 +104,7 @@ void TCPConnection::rxWorker()
         if (_stopFlag) return;
         switch(_state){
             case ESTATE_CONNECTIONS::INIT:
+                close_connection();
                 if(open_connection()){
                     setState(ESTATE_CONNECTIONS::CONNECTED);;
                 } else {

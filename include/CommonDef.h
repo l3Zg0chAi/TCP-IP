@@ -28,9 +28,9 @@ struct Packet {
 };
 
 const std::unordered_map<ConnectionID, ConnectionInfo> ConnectionInfoTable = {
-    {ConnectionID_ONE,   {SERVER_IP, 10001, CLIENT_IP, 1001}},
-    {ConnectionID_TWO,   {SERVER_IP, 10002, CLIENT_IP, 1002}},
-    {ConnectionID_THREE, {SERVER_IP, 10003, CLIENT_IP, 1003}}
+    {ConnectionID_ONE,   {SERVER_IP, 10001, CLIENT_IP, 2001}},
+    {ConnectionID_TWO,   {SERVER_IP, 10002, CLIENT_IP, 2002}},
+    {ConnectionID_THREE, {SERVER_IP, 10003, CLIENT_IP, 2003}}
 }; 
 
 #endif // COMMON_DEF

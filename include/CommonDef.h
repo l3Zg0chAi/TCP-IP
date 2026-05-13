@@ -15,7 +15,7 @@ typedef UI_8 ConnectionID;
 #define ConnectionID_THREE 3U
 
 #define CLIENT_IP "192.168.24.128"
-#define SERVER_IP ""
+#define SERVER_IP "192.168.24.128"
 struct ConnectionInfo {
     std::string serverADDR;
     UI_32 serverPort;
@@ -28,9 +28,9 @@ struct Packet {
 };
 
 const std::unordered_map<ConnectionID, ConnectionInfo> ConnectionInfoTable = {
-    {ConnectionID_ONE,   {SERVER_IP, 10001, CLIENT_IP, 9001}},
-    {ConnectionID_TWO,   {SERVER_IP, 10002, CLIENT_IP, 9002}},
-    {ConnectionID_THREE, {SERVER_IP, 10003, CLIENT_IP, 9003}}
+    {ConnectionID_ONE,   {SERVER_IP, 10001, CLIENT_IP, 1001}},
+    {ConnectionID_TWO,   {SERVER_IP, 10002, CLIENT_IP, 1002}},
+    {ConnectionID_THREE, {SERVER_IP, 10003, CLIENT_IP, 1003}}
 }; 
 
 #endif // COMMON_DEF

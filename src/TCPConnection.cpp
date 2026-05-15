@@ -19,11 +19,11 @@ int TCPConnection::read_pdu()
     char buffer[1024];
     fd_set readfds;
     FD_ZERO(&readfds);
-    FD_SET(_info.sockfd, &readfds);
+    FD_SET(_sockfd, &readfds);
     struct timeval timeout;
     timeout.tv_sec = 2;   // 2 second
     timeout.tv_usec = 0;
-    int ret = select(_info.sockfd + 1, &readfds, nullptr, nullptr, &timeout);
+    int ret = select(_sockfd + 1, &readfds, nullptr, nullptr, &timeout);
     if (ret == 0){
         DEBUG_LOG("no data comes");
     }
@@ -31,7 +31,7 @@ int TCPConnection::read_pdu()
         DEBUG_LOG("select fail errno=%d error=%s", errno, strerror(errno));
     } 
     else{
-        ret = recv(_info.sockfd, buffer, sizeof(buffer), 0);
+        ret = recv(_sockfd, buffer, sizeof(buffer), 0);
         if ( ret > 0){
             DEBUG_LOG("recv %d bytes", ret);
         }

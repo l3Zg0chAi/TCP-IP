@@ -14,9 +14,54 @@ TCPConnection::~TCPConnection()
     stop();
 }
 
+int TCPConnection::read_pdu()
+{
+    char buffer[1024];
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(_info.sockfd, &readfds);
+    struct timeval timeout;
+    timeout.tv_sec = 2;   // 2 second
+    timeout.tv_usec = 0;
+    int ret = select(_info.sockfd + 1, &readfds, nullptr, nullptr, &timeout);
+    if (ret == 0){
+        DEBUG_LOG("no data comes");
+    }
+    else if (ret < 0){
+        DEBUG_LOG("select fail errno=%d error=%s", errno, strerror(errno));
+    } 
+    else{
+        ret = recv(_info.sockfd, buffer, sizeof(buffer), 0);
+        if ( ret > 0){
+            DEBUG_LOG("recv %d bytes", ret);
+        }
+        else if (ret == 0){
+            // close by peer, client close
+            DEBUG_LOG("close by peer mean client close socket connection");
+            ret = -2; // FIN
+        }
+        else {
+            DEBUG_LOG("recv fail errno=%d error=%s", errno, strerror(errno));
+        }
+    }
+    DEBUG_LOG("ret %d", ret);
+    return ret;
+}
+
 bool TCPConnection::receive_from_server()
 {
-    // nhận từ recv, push vào queue
+    int ret = read_pdu();
+    if (ret < 0){
+        if (ret == -2){
+            DEBUG_LOG("CLOSE BY PEER");
+        } else {
+            DEBUG_LOG("CLOSE BY RST");
+        }
+        return false;
+    }
+    if ( ret > 0){
+        DEBUG_LOG("read pdu success with %d bytes", ret);
+    }
     return true;
 }
 
@@ -71,7 +116,7 @@ void TCPConnection::close_connection()
 void TCPConnection::stop()
 {
     close_connection();
-    _stopFlag = true;
+    _stopFlag.store(true);
     if (_rxThread.joinable()){
         _rxThread.join();
     }
@@ -83,11 +128,11 @@ void TCPConnection::start()
                                                             _infoConn.clientPort,
                                                             _infoConn.serverADDR.c_str(),
                                                             _infoConn.serverPort);
-    if (!_stopFlag){
+    if (!_stopFlag.load()){
         DEBUG_LOG("connection already running");
         return;
     }                                                        
-    _stopFlag = false;
+    _stopFlag.store(false);
     _rxThread = std::thread(&TCPConnection::rxWorker, this);
 }
 
@@ -102,15 +147,14 @@ void TCPConnection::rxWorker()
 {
     setCurrentThreadName(std::string("rxWorker"));
     while(true){
-        if (_stopFlag) return;
+        if (_stopFlag.load()) return;
         switch(_state){
             case ESTATE_CONNECTIONS::INIT:
                 close_connection();
-                if(open_connection()){
-                    setState(ESTATE_CONNECTIONS::CONNECTED);;
-                } else {
-                    setState(ESTATE_CONNECTIONS::CLOSED);
+                if (!open_connection()){
+                    continue;
                 }
+                setState(ESTATE_CONNECTIONS::CONNECTED);
                 break;
             case ESTATE_CONNECTIONS::CONNECTED:
                 if(!receive_from_server()){

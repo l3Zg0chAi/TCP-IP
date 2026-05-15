@@ -28,7 +28,7 @@ public:
     void stop();
     void start();
     
-    void read_pdu();
+    int read_pdu();
 
     void setState(ESTATE_CONNECTIONS state);
 

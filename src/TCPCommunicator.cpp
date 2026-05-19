@@ -17,9 +17,9 @@ void TCPCommunicator::start()
     }
 }
 
-void TCPCommunicator::pushToQueue(Packet value)
+void TCPCommunicator::pushToRxQueue(Packet&& value)
 {
-    _rxQueueAllConn.push(value);
+    _rxQueueAllConn.push(std::move(value));
 }
 
 bool TCPCommunicator::receive_packet(Packet &value)

@@ -14,7 +14,7 @@ public:
 
     TCPCommunicator();
     void start();
-    void pushToQueue(Packet value);
+    void pushToRxQueue(Packet&& value);
     bool receive_packet(Packet& value);
 private:
     std::unordered_map<ConnectionID, std::unique_ptr<TCPConnection>> connections;

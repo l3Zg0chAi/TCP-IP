@@ -2,6 +2,8 @@
 #include "Logger.h"
 #include <thread>
 #include <chrono>
+#include <CommonFuction.h>
+#include <TCPCommunicator.h>
 
 TCPConnection::TCPConnection(ConnectionInfo info) 
     : _infoConn(info), _sockfd(-1), _stopFlag(true), _state(ESTATE_CONNECTIONS::CLOSED)
@@ -14,43 +16,48 @@ TCPConnection::~TCPConnection()
     stop();
 }
 
-int TCPConnection::read_pdu()
+int TCPConnection::read_pdu(Packet& packet)
 {
-    char buffer[1024];
-    fd_set readfds;
-    FD_ZERO(&readfds);
-    FD_SET(_sockfd, &readfds);
-    struct timeval timeout;
-    timeout.tv_sec = 2;   // 2 second
-    timeout.tv_usec = 0;
-    int ret = select(_sockfd + 1, &readfds, nullptr, nullptr, &timeout);
-    if (ret == 0){
-        DEBUG_LOG("no data comes");
-    }
-    else if (ret < 0){
-        DEBUG_LOG("select fail errno=%d error=%s", errno, strerror(errno));
-    } 
-    else{
-        ret = recv(_sockfd, buffer, sizeof(buffer), 0);
-        if ( ret > 0){
-            DEBUG_LOG("recv %d bytes", ret);
-        }
-        else if (ret == 0){
-            // close by peer, client close
-            DEBUG_LOG("close by peer mean client close socket connection");
-            ret = -2; // FIN
-        }
-        else {
-            DEBUG_LOG("recv fail errno=%d error=%s", errno, strerror(errno));
+    packet._rawData.resize(8); // allocate 8byte to receive PDUID and payload length
+    int result = 0;
+    int byte = 0;
+
+    for(int i = 0; i<4; i++){
+        byte += result;
+        result = EthernetTimeSyncRecv(_sockfd, packet._rawData.data() + byte, 1, 2, 0);
+        if (result <= 0){
+            DEBUG_LOG("It is impossible to not read at least 1 byte, TCP Connection maybe have a trouble");
+            return result;
         }
     }
-    DEBUG_LOG("ret %d", ret);
-    return ret;
+
+    byte += result;
+    while (8 > byte){
+        result = EthernetTimeSyncRecv(_sockfd, packet._rawData.data() + byte, 8 - byte, 2, 0);
+         if (result < 0){
+            return result;
+        }
+        byte += result;
+    }
+
+    int payload_length = packet.getPayloadLen();
+    packet._rawData.resize(8+payload_length);
+
+    byte = 0;
+    while (byte < payload_length){
+        result = EthernetTimeSyncRecv(_sockfd, packet._rawData.data() + byte + 8, payload_length - byte, 2, 0);
+         if (result < 0){
+            return result;
+        }
+        byte += result;
+    }
+    return result;
 }
 
 bool TCPConnection::receive_from_server()
 {
-    int ret = read_pdu();
+    Packet packet; // will receive data to here
+    int ret = read_pdu(packet);
     if (ret < 0){
         if (ret == -2){
             DEBUG_LOG("CLOSE BY PEER");
@@ -62,6 +69,8 @@ bool TCPConnection::receive_from_server()
     if ( ret > 0){
         DEBUG_LOG("read pdu success with %d bytes", ret);
     }
+
+    TCPCommunicator::get_instance()->pushToRxQueue(std::move(packet));
     return true;
 }
 

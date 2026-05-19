@@ -16,10 +16,10 @@ public:
         return *this;
     }
 
-    void push(T value){
+    void push(T&& value){
         {
             std::lock_guard<std::mutex> lock(_mutex);
-            if (_queue.size() > 50){
+            if (_queue.size() >= 50){
                 return;
             }
             _queue.push(std::move(value));  
